@@ -10,7 +10,7 @@ import (
 func main() {
 	port := os.Getenv("PORT")
 	router := mux.NewRouter()
-	router.HandleFunc("/mail", HandlePostMail).Methods("POST")
+	router.HandleFunc("/message", HandlePostMessage).Methods("POST")
 
 	fmt.Printf("Listening on :%v\n", port)
 	http.ListenAndServe(fmt.Sprintf(":%s", port), router)
