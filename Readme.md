@@ -20,3 +20,4 @@ rmail is a lightweight API for routing form data from client side applications t
 _Note: omitting the slack webhook url will disable slack functionality_
 
 ## Anatomy of the message request
+...wip
