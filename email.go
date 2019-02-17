@@ -10,11 +10,11 @@ import (
 
 // Email represents the email type
 type Email struct {
-	FromEmail, FromName, ToName, ToEmail, Subject, TextBody string
+	MessageChannel
 }
 
 // Send sends an email to the RECIPIENT_EMAIL using the Sendgrid go SDK
-func (e *Email) Send() (err error) {
+func (e *Email) Send() error {
 	host := "https://api.sendgrid.com"
 	sendgridAPIKey := os.Getenv("SENDGRID_API_KEY")
 	req := sendgrid.GetRequest(sendgridAPIKey, "/v3/mail/send", host)
@@ -28,15 +28,8 @@ func (e *Email) Send() (err error) {
 	return nil
 }
 
-// WriteBody takes a raw body, filters it, formats it, and then adds it to
-// Email.TextBody
-func (e *Email) WriteBody(raw string) (err error) {
-	e.TextBody = raw
-	return nil
-}
-
 // Create the sendgrid json request object
-func (e *Email) sendgridReqJSON() string {
+func (e Email) sendgridReqJSON() string {
 	w := new(bytes.Buffer)
 	s := `{
 		"personalizations": [
