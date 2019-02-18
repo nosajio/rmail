@@ -1,20 +1,38 @@
-FROM golang:alpine
+# Stage: 1
+FROM golang:alpine AS build
 
-# Configure ENV variables. Run go build with --build-arg PORT=8080 --build-arg SENDGRID_API_KEY=... etc
-ENV PORT                        = ${PORT}
-ENV SENDGRID_API_KEY            = ${SENDGRID_API_KEY}
-ENV RECIPIENT_EMAIL             = ${RECIPIENT_EMAIL}
-ENV RECIPIENT_SLACK_WEBHOOK_URL = ${RECIPIENT_SLACK_WEBHOOK_URL}
+# Add missing packages that aren't in alpine
+RUN apk update && apk add --no-cache git
 
-RUN mkdir -p /usr/rmail/bin
-ADD . /usr/rmail
-WORKDIR /usr/rmail
+# Setup work dir
+RUN mkdir -p /go/src/rmail
+WORKDIR /go/src/rmail/
+ADD . .
 
-# Compile the binary
-RUN go build -o /usr/rmail/bin/production .
+# Build the binary
+RUN go get . && GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o /go/bin/rmail .
 
-# Same as PORT environment variable. The listening port
-EXPOSE ${PORT}
+# Stage: 2
+FROM alpine:latest
+
+# Configure workdir and move binary from build step
+WORKDIR /go/bin/
+COPY --from=build /go/bin/rmail .
+
+# Configure ENV variables. 
+ARG PORT
+ARG SENDGRID_API_KEY
+ARG RECIPIENT_EMAIL
+ARG RECIPIENT_NAME
+ARG RECIPIENT_SLACK_WEBHOOK_URL
+ENV PORT                        ${PORT}
+ENV SENDGRID_API_KEY            ${SENDGRID_API_KEY}
+ENV RECIPIENT_EMAIL             ${RECIPIENT_EMAIL}
+ENV RECIPIENT_NAME              ${RECIPIENT_NAME}
+ENV RECIPIENT_SLACK_WEBHOOK_URL ${RECIPIENT_SLACK_WEBHOOK_URL}
 
 # Run the binary
-CMD ["./bin/production"]
+ENTRYPOINT ["./rmail"]
+
+# Expose listening port
+EXPOSE ${PORT}

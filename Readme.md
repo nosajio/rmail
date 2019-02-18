@@ -1,23 +1,46 @@
 # rmail: A Messaging API
 
-rmail is a lightweight API for routing form data from client side applications to various message outlets
+rmail (rest + email) is a lightweight API for creating and routing messages from client side applications to various outlets.
 
 ## Supported outlets
-- Email (SendGrid)
-- Slack webhook
+- Email (SendGrid smtp api)
+- Slack (webhook)
 
-## Install
+## Run
 1. Clone this repo.
 2. Run `go get` to get dependencies.
 3. Add environment variables to the current env:
-  ```bash
-  export PORT=3344
-  export SENDGRID_API_KEY=
-  export RECIPIENT_EMAIL=
-  export RECIPIENT_SLACK_WEBHOOK_URL=
-  ```
+```bash
+export PORT=8080
+export SENDGRID_API_KEY=
+export RECIPIENT_EMAIL=
+export RECIPIENT_SLACK_WEBHOOK_URL=
+```
+4. After exporting env variables, build and run with `go run *.go`
 
 _Note: omitting the slack webhook url will disable slack functionality_
 
 ## Anatomy of the message request
-...wip
+```http
+POST /message
+Content-Type: application/json
+
+{
+    "email": "somebody@example.com",
+    "message": "The body of the message....",
+    "name": "Somebody",
+    "subject": "Work enquiry"
+}
+```
+
+## Docker deploys
+Build the image with:
+```bash
+docker build \
+  --build-arg PORT=8080 \
+  --build-arg SENDGRID_API_KEY=xxxxxx \
+  --build-arg RECIPIENT_EMAIL=you@example.com \
+  --build-arg RECIPIENT_NAME=xxx \
+  --build-arg RECIPIENT_SLACK_WEBHOOK_URL=https://xxx \
+  -t rmail:latest .
+```
