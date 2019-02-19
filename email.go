@@ -22,7 +22,7 @@ func (e *Email) Send() error {
 	req.Body = []byte(e.sendgridReqJSON())
 	res, err := sendgrid.API(req)
 	if err != nil || res.StatusCode < 200 || res.StatusCode >= 300 {
-		return fmt.Errorf("There was a problem sending the email (status: %d)", res.StatusCode)
+		return fmt.Errorf("There was a problem sending the email (%s)", err.Error())
 	}
 	fmt.Printf("Email sent (%d) to: %s, from: %s\n", res.StatusCode, e.ToEmail, e.FromEmail)
 	return nil

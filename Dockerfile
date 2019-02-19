@@ -19,6 +19,9 @@ FROM alpine:latest
 WORKDIR /go/bin/
 COPY --from=build /go/bin/rmail .
 
+# Make SSL work
+RUN apk --no-cache add ca-certificates && rm -rf /var/cache/apk/*
+
 # Configure ENV variables. 
 ARG PORT
 ARG SENDGRID_API_KEY
