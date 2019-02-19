@@ -15,6 +15,7 @@ export PORT=8080
 export SENDGRID_API_KEY=
 export RECIPIENT_EMAIL=
 export RECIPIENT_SLACK_WEBHOOK_URL=
+export ALLOWED_ORIGINS=*
 ```
 4. After exporting env variables, build and run with `go run *.go`
 
@@ -42,5 +43,6 @@ docker build \
   --build-arg RECIPIENT_EMAIL=you@example.com \
   --build-arg RECIPIENT_NAME=xxx \
   --build-arg RECIPIENT_SLACK_WEBHOOK_URL=https://xxx \
+  --build-arg ALLOWED_ORIGINS=* \
   -t rmail:latest .
 ```
