@@ -23,7 +23,8 @@ func main() {
 
 func corsRouter(h http.Handler) http.Handler {
 	corsMethods := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "OPTIONS"})
-	originsEnv := strings.Split(strings.Replace(os.Getenv("ALLOWED_ORIGINS"), " ", "", -1), ",")
+	corsHeaders := handlers.AllowedHeaders([]string{"X-Requested-With"})
+	originsEnv := strings.Split(strings.Replace(os.Getenv("ALLOWED_ORIGINS"), " ", "", -1), ",") // -1 means 'replace all'
 	corsOrigins := handlers.AllowedOrigins(originsEnv)
-	return handlers.CORS(corsOrigins, corsMethods)(h)
+	return handlers.CORS(corsOrigins, corsHeaders, corsMethods)(h)
 }
