@@ -2,16 +2,14 @@ btp: build tag push
 
 build:
 	@echo "Building ${IMAGE_NAME} for release..."
-	docker build \
+	source $(shell pwd)/.env.production && docker build \
 		--build-arg PORT=${PORT} \
 		--build-arg SENDGRID_API_KEY=${SENDGRID_API_KEY} \
 		--build-arg RECIPIENT_EMAIL=${RECIPIENT_EMAIL} \
 		--build-arg RECIPIENT_NAME=${RECIPIENT_NAME} \
 		--build-arg RECIPIENT_SLACK_WEBHOOK_URL=${RECIPIENT_SLACK_WEBHOOK_URL} \
 		--build-arg ALLOWED_ORIGINS=${ALLOWED_ORIGINS} \
-		-t ${IMAGE_NAME}:latest .
-	
-	docker build -t ${IMAGE_NAME}:latest .
+		-t ${IMAGE_NAME}:latest $(shell pwd)
 
 tag:
 	@echo "Tagging..."
