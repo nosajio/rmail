@@ -9,7 +9,7 @@ rmail (rest + email) is a lightweight API for creating and routing messages from
 ## Run
 1. Clone this repo.
 2. Run `go get` to get dependencies.
-3. Add environment variables to the current env or export the variables from a `.env.production` file. The Makefile build task will automatically look for the `.env.production` file.
+3. Add environment variables to the current env or export the variables from a `.env.production` file.
 ```bash
 # Docker build and repo vars
 export IMAGE_NAME=rmail
@@ -44,21 +44,21 @@ Content-Type: application/json
 
 #### Build the container
 ```bash
-make build
+source .env.production && make build
 ```
 
 #### Tag the container
 ```bash
-make tag
+source .env.production && make tag
 
 ```
 
 #### Push the container 
 ```bash
-make push
+source .env.production && make push
 ```
 
 #### Build, tag, push
 ```bash
-make btp
+source .env.production && make btp
 ```
