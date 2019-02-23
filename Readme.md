@@ -11,6 +11,12 @@ rmail (rest + email) is a lightweight API for creating and routing messages from
 2. Run `go get` to get dependencies.
 3. Add environment variables to the current env:
 ```bash
+# Docker build and repo vars
+export IMAGE_NAME=rmail
+export REPOSITORY_NAME=rmail
+export REPOSITORY_URL=
+
+# App runtime vars
 export PORT=8080
 export SENDGRID_API_KEY=
 export RECIPIENT_EMAIL=
@@ -19,7 +25,7 @@ export ALLOWED_ORIGINS=*
 ```
 4. After exporting env variables, build and run with `go run *.go`
 
-_Note: omitting the slack webhook url will disable slack functionality_
+_Note: omit the slack webhook url to disable slack functionality_
 
 ## Anatomy of the message request
 ```http
@@ -35,14 +41,24 @@ Content-Type: application/json
 ```
 
 ## Docker deploys
-Build the image with:
+
+#### Build the container
 ```bash
-docker build \
-  --build-arg PORT=8080 \
-  --build-arg SENDGRID_API_KEY=xxxxxx \
-  --build-arg RECIPIENT_EMAIL=you@example.com \
-  --build-arg RECIPIENT_NAME=xxx \
-  --build-arg RECIPIENT_SLACK_WEBHOOK_URL=https://xxx \
-  --build-arg ALLOWED_ORIGINS=* \
-  -t rmail:latest .
+make build
+```
+
+#### Tag the container
+```bash
+make tag
+
+```
+
+#### Push the container 
+```bash
+make push
+```
+
+#### Build, tag, push
+```bash
+make btp
 ```
