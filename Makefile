@@ -1,5 +1,7 @@
 btp: build tag push
 
+br: build run
+
 build:
 	@echo "Building ${IMAGE_NAME} for release..."
 	source $(shell pwd)/.env.production && docker build \
@@ -18,3 +20,7 @@ tag:
 push:
 	@echo "Pushing..."
 	docker push ${REPOSITORY_URL}/${REPOSITORY_NAME}:latest
+
+run: 
+	@echo "Running temporary image..."
+	docker run --rm -p ${PORT}:${PORT} ${IMAGE_NAME}:latest

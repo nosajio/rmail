@@ -49,9 +49,13 @@ func HandlePostMessage(w http.ResponseWriter, r *http.Request) {
 
 func sendMessages(m []Message) error {
 	for _, mm := range m {
+		if mm == nil {
+			continue
+		}
 		err := mm.Send()
 		if err != nil {
-			fmt.Printf("Error sending message to channel \"%s\" (%s)", reflect.TypeOf(mm), err.Error())
+			fmt.Printf("Error sending message: \"%s\" (%s)\n", reflect.TypeOf(mm), err.Error())
+			return err
 		}
 	}
 	return nil

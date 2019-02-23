@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"github.com/sendgrid/sendgrid-go"
 	"os"
@@ -15,14 +16,18 @@ type Email struct {
 
 // Send sends an email to the RECIPIENT_EMAIL using the Sendgrid go SDK
 func (e *Email) Send() error {
+	if e.FromName == "" || e.FromEmail == "" {
+		return errors.New("Name and email must be provided")
+	}
 	host := "https://api.sendgrid.com"
 	sendgridAPIKey := os.Getenv("SENDGRID_API_KEY")
 	req := sendgrid.GetRequest(sendgridAPIKey, "/v3/mail/send", host)
 	req.Method = "POST"
 	req.Body = []byte(e.sendgridReqJSON())
 	res, err := sendgrid.API(req)
-	if err != nil || res.StatusCode < 200 || res.StatusCode >= 300 {
-		return fmt.Errorf("There was a problem sending the email (%s)", err.Error())
+	if err != nil || res == nil || res.StatusCode < 200 || res.StatusCode >= 300 {
+		fmt.Printf("There was a problem sending the email. Logging the message instead: %v", e)
+		return err
 	}
 	fmt.Printf("Email sent (%d) to: %s, from: %s\n", res.StatusCode, e.ToEmail, e.FromEmail)
 	return nil
