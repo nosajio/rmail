@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/sendgrid/sendgrid-go"
 	"os"
+	"strings"
 	"text/template"
 )
 
@@ -19,6 +20,8 @@ func (e *Email) Send() error {
 	if e.FromName == "" || e.FromEmail == "" {
 		return errors.New("Name and email must be provided")
 	}
+	// Replace newlines in the message with breaks
+	e.TextBody = strings.Replace(e.TextBody, "/n", "<br/>", -1)
 	host := "https://api.sendgrid.com"
 	sendgridAPIKey := os.Getenv("SENDGRID_API_KEY")
 	req := sendgrid.GetRequest(sendgridAPIKey, "/v3/mail/send", host)
@@ -55,7 +58,7 @@ func (e Email) sendgridReqJSON() string {
 			"name": "{{.FromName}}"
 		},
 		"content": [{
-			"type": "text/plain",
+			"type": "text/html",
 			"value": "{{.TextBody}}"
 		}]
 	}`
