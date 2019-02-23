@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/sendgrid/sendgrid-go"
+	"html"
 	"os"
 	"regexp"
 	"text/template"
@@ -21,8 +22,10 @@ func (e *Email) Send() error {
 		return errors.New("Name and email must be provided")
 	}
 	nlReg := regexp.MustCompile(`(?m)\n|\r`)
-	// Replace newlines in the message with breaks
-	e.TextBody = string(nlReg.ReplaceAll([]byte(e.TextBody), []byte("<br/>")))
+	// Ensure the string is properly prepared for sending over HTTP
+	e.TextBody = html.EscapeString(
+		string(nlReg.ReplaceAll([]byte(e.TextBody), []byte("<br/>"))))
+	// Make the api request
 	host := "https://api.sendgrid.com"
 	sendgridAPIKey := os.Getenv("SENDGRID_API_KEY")
 	req := sendgrid.GetRequest(sendgridAPIKey, "/v3/mail/send", host)
