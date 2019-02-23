@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/sendgrid/sendgrid-go"
 	"os"
-	"strings"
+	"regexp"
 	"text/template"
 )
 
@@ -20,8 +20,9 @@ func (e *Email) Send() error {
 	if e.FromName == "" || e.FromEmail == "" {
 		return errors.New("Name and email must be provided")
 	}
+	nlReg := regexp.MustCompile(`(?m)\n|\r`)
 	// Replace newlines in the message with breaks
-	e.TextBody = strings.Replace(e.TextBody, "/n", "<br/>", -1)
+	e.TextBody = string(nlReg.ReplaceAll([]byte(e.TextBody), []byte("<br/>")))
 	host := "https://api.sendgrid.com"
 	sendgridAPIKey := os.Getenv("SENDGRID_API_KEY")
 	req := sendgrid.GetRequest(sendgridAPIKey, "/v3/mail/send", host)
@@ -29,7 +30,7 @@ func (e *Email) Send() error {
 	req.Body = []byte(e.sendgridReqJSON())
 	res, err := sendgrid.API(req)
 	if err != nil || res == nil || res.StatusCode < 200 || res.StatusCode >= 300 {
-		fmt.Printf("There was a problem sending the email. Logging the message instead: %v", e)
+		fmt.Printf("There was a problem sending the email. Logging the message instead: %+v", e)
 		return err
 	}
 	fmt.Printf("Email sent (%d) to: %s, from: %s\n", res.StatusCode, e.ToEmail, e.FromEmail)
