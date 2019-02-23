@@ -23,8 +23,8 @@ func (e *Email) Send() error {
 	}
 	nlReg := regexp.MustCompile(`(?m)\n|\r`)
 	// Ensure the string is properly prepared for sending over HTTP
-	e.TextBody = html.EscapeString(
-		string(nlReg.ReplaceAll([]byte(e.TextBody), []byte("<br/>"))))
+	e.TextBody = html.EscapeString(e.TextBody)
+	e.TextBody = string(nlReg.ReplaceAll([]byte(e.TextBody), []byte("<br/>")))
 	// Make the api request
 	host := "https://api.sendgrid.com"
 	sendgridAPIKey := os.Getenv("SENDGRID_API_KEY")
